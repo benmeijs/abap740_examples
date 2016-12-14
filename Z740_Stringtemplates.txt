@@ -1,0 +1,29 @@
+*/**
+* Concatenate needs a lot of in-between steps.
+* Using string templates, it is possible to create a string in one statement
+*/
+REPORT z740_02_stringtemplat.
+PARAMETERS: pa_date TYPE bkpf-budat DEFAULT sy-datlo,
+            pa_amnt TYPE bseg-dmbtr OBLIGATORY  DEFAULT '1234.56',
+            pa_cuky TYPE t001-waers OBLIGATORY  DEFAULT 'USD',
+            pa_cntry TYPE t005-land1 OBLIGATORY DEFAULT 'NL'.
+
+* 1 needed for CONCATENATE
+DATA: concatenated_string TYPE string.
+DATA: date_as_char        TYPE c LENGTH 10,
+      amount_as_char      TYPE c LENGTH 13.
+SET COUNTRY pa_cntry.
+WRITE pa_date TO date_as_char .
+WRITE pa_amnt TO amount_as_char CURRENCY pa_cuky.
+CONCATENATE `On` date_as_char `I gave him` amount_as_char pa_cuky INTO concatenated_string SEPARATED BY space.
+CONDENSE concatenated_string.
+WRITE: / concatenated_string.
+
+* 2 needed for STRING TEMPLATE
+DATA: string_template    TYPE string.
+string_template = |On { pa_date COUNTRY = pa_cntry } I gave him { pa_amnt CURRENCY = pa_cuky COUNTRY = pa_cntry } { pa_cuky }|.
+WRITE : / string_template.
+
+write: / |On { pa_date COUNTRY = pa_cntry } I gave him { pa_amnt CURRENCY = pa_cuky COUNTRY = pa_cntry } { pa_cuky }|.
+
+write: / |On { pa_date COUNTRY = pa_cntry } { 'I gave him'(001) } { pa_amnt CURRENCY = pa_cuky COUNTRY = pa_cntry } { pa_cuky }|.
