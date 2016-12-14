@@ -1,0 +1,26 @@
+
+REPORT zvnsg_cdv_1_sql_expression.
+DATA: wa_dd02l TYPE dd02l.
+SELECT-OPTIONS: so_tabnm FOR wa_dd02l-tabname.
+" example of SQL expression
+SELECT  dd02l~tabname,
+        CASE tabclass
+           WHEN 'TRANSP' THEN 'TRANSPARANT TABLE'
+           WHEN 'POOL'   THEN 'POOLED TABLE'
+           WHEN 'CLUSTER' THEN 'CLUSTER TABLE'
+           ELSE 'UNDEFINED'
+        END    AS table_class_txt,
+        COUNT( DISTINCT dd03l~domname ) AS nonsense
+        FROM dd02l INNER JOIN dd03l ON dd03l~tabname = dd02l~tabname
+        INTO TABLE @DATA(ta_dd02l) " <= INLINE DECLARATION
+  WHERE dd02l~tabname IN @so_tabnm
+  GROUP BY tabclass, dd02l~tabname
+  HAVING COUNT( DISTINCT dd03l~domname ) > 5.
+
+cl_salv_table=>factory(
+  IMPORTING
+    r_salv_table   =     DATA(alv) "<= Inline Declaration
+  CHANGING
+    t_table        =  ta_dd02l
+).
+alv->display( ).
