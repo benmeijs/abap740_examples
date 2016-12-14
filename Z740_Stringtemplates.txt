@@ -2,6 +2,7 @@
 * Concatenate needs a lot of in-between steps.
 * Using string templates, it is possible to create a string in one statement
 */
+
 REPORT z740_02_stringtemplat.
 PARAMETERS: pa_date TYPE bkpf-budat DEFAULT sy-datlo,
             pa_amnt TYPE bseg-dmbtr OBLIGATORY  DEFAULT '1234.56',
